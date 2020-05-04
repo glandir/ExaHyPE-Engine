@@ -20,83 +20,92 @@
  */
 #include "tarch/logging/Log.h"
 
-
-namespace SWE{
-  class MySWESolver;
+namespace SWE {
+class MySWESolver;
 }
 
 class SWE::MySWESolver : public SWE::AbstractMySWESolver {
-  private:
-    /**
-     * Log device
-     */
-    static tarch::logging::Log _log;
-  public:
-    MySWESolver(const double maximumMeshSize,const exahype::solvers::Solver::TimeStepping timeStepping);
-    
-    /**
-     * Initialise the solver.
-     *
-     * \param[in] cmdlineargs the command line arguments.
-     * \param[in] constants   access to the constants specified for the solver.
-     */
-    void init(const std::vector<std::string>& cmdlineargs,const exahype::parser::ParserView& constants) final override ;
+ private:
+  /**
+   * Log device
+   */
+  static tarch::logging::Log _log;
 
-    /**
-     * @see FiniteVolumesSolver
-     */    
-    void adjustSolution(const double* const x,const double t,const double dt, double* const Q) override; 
-    
-    /**
-     * Compute the eigenvalues of the flux tensor per coordinate direction \p d.
-     *
-     * \param[in] Q  the conserved variables associated with a quadrature node
-     *               as C array (already allocated).
-     * \param[in] d  the column of the flux vector (d=0,1,...,DIMENSIONS).
-     * \param[inout] lambda the eigenvalues as C array (already allocated).
-     */
-    void eigenvalues(const double* const Q,const int d,double* const lambda) override;
-        
-    /**
-     * Impose boundary conditions at a point on a boundary face
-     * within the time interval [t,t+dt].
-     *
-     * \param[in]    x         the physical coordinate on the face.
-     * \param[in]    t         the start of the time interval.
-     * \param[in]    dt        the width of the time interval.
-     * \param[in]    faceIndex indexing of the face (0 -- {x[0]=xmin}, 1 -- {x[1]=xmax}, 2 -- {x[1]=ymin}, 3 -- {x[2]=ymax}, and so on,
-     *                         where xmin,xmax,ymin,ymax are the bounds of the cell containing point x.
-     * \param[in]    d         the coordinate direction the face normal is pointing to.
-     * \param[in]    QIn       the conserved variables at point x from inside of the domain
-     *                         and time-averaged (over [t,t+dt]) as C array (already allocated).
-     * \param[inout] QOut      the conserved variables at point x from outside of the domain
-     *                         and time-averaged (over [t,t+dt]) as C array (already allocated).
-     */
-    void boundaryValues(
-    const double* const x,
-    const double t,const double dt,
-    const int faceIndex,
-    const int d,
-    const double* const stateInside,
-    double* const stateOutside) override;
-    
-    /**
-     * Compute the flux tensor.
-     *
-     * \param[in]    Q the conserved variables (and parameters) associated with a quadrature point
-     *                 as C array (already allocated).
-     * \param[inout] F the fluxes at that point as C array (already allocated).
-     */
-    void flux(const double* const Q,double** const F) override;
+ public:
+  MySWESolver(const double maximumMeshSize,
+              const exahype::solvers::Solver::TimeStepping timeStepping);
 
-    /*double riemannSolver(double* fL, double *fR, const double* qL, const double* qR, const double* gradQL, const double* gradQR, const double* cellSize, int direction) override; */
+  /**
+   * Initialise the solver.
+   *
+   * \param[in] cmdlineargs the command line arguments.
+   * \param[in] constants   access to the constants specified for the solver.
+   */
+  void init(const std::vector<std::string>& cmdlineargs,
+            const exahype::parser::ParserView& constants) final override;
 
-    /* algebraicSource() function not included, as requested by the specification file */
+  /**
+   * @see FiniteVolumesSolver
+   */
+  void adjustSolution(const double* const x, const double t, const double dt,
+                      double* const Q) override;
 
-    /* nonConservativeProduct() function is not included, as requested in the specification file */
-    
-    /* pointSource() function not included, as requested in the specification file */
+  using AbstractMySWESolver::adjustSolution;
+
+  /**
+   * Compute the eigenvalues of the flux tensor per coordinate direction \p d.
+   *
+   * \param[in] Q  the conserved variables associated with a quadrature node
+   *               as C array (already allocated).
+   * \param[in] d  the column of the flux vector (d=0,1,...,DIMENSIONS).
+   * \param[inout] lambda the eigenvalues as C array (already allocated).
+   */
+  void eigenvalues(const double* const Q, const int d,
+                   double* const lambda) override;
+
+  /**
+   * Impose boundary conditions at a point on a boundary face
+   * within the time interval [t,t+dt].
+   *
+   * \param[in]    x         the physical coordinate on the face.
+   * \param[in]    t         the start of the time interval.
+   * \param[in]    dt        the width of the time interval.
+   * \param[in]    faceIndex indexing of the face (0 -- {x[0]=xmin}, 1 --
+   * {x[1]=xmax}, 2 -- {x[1]=ymin}, 3 -- {x[2]=ymax}, and so on, where
+   * xmin,xmax,ymin,ymax are the bounds of the cell containing point x.
+   * \param[in]    d         the coordinate direction the face normal is
+   * pointing to. \param[in]    QIn       the conserved variables at point x
+   * from inside of the domain and time-averaged (over [t,t+dt]) as C array
+   * (already allocated). \param[inout] QOut      the conserved variables at
+   * point x from outside of the domain and time-averaged (over [t,t+dt]) as C
+   * array (already allocated).
+   */
+  void boundaryValues(const double* const x, const double t, const double dt,
+                      const int faceIndex, const int d,
+                      const double* const stateInside,
+                      double* const stateOutside) override;
+
+  /**
+   * Compute the flux tensor.
+   *
+   * \param[in]    Q the conserved variables (and parameters) associated with a
+   * quadrature point as C array (already allocated). \param[inout] F the fluxes
+   * at that point as C array (already allocated).
+   */
+  void flux(const double* const Q, double** const F) override;
+
+  /*double riemannSolver(double* fL, double *fR, const double* qL, const double*
+   * qR, const double* gradQL, const double* gradQR, const double* cellSize, int
+   * direction) override; */
+
+  /* algebraicSource() function not included, as requested by the specification
+   * file */
+
+  /* nonConservativeProduct() function is not included, as requested in the
+   * specification file */
+
+  /* pointSource() function not included, as requested in the specification file
+   */
 };
 
-
-#endif // __MySWESolver_CLASS_HEADER__
+#endif  // __MySWESolver_CLASS_HEADER__
