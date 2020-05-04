@@ -94,9 +94,10 @@ class SWE::MySWESolver : public SWE::AbstractMySWESolver {
    */
   void flux(const double* const Q, double** const F) override;
 
-  /*double riemannSolver(double* fL, double *fR, const double* qL, const double*
-   * qR, const double* gradQL, const double* gradQR, const double* cellSize, int
-   * direction) override; */
+  double riemannSolver(double* fL, double* fR, const double* qL,
+                       const double* qR, const double* gradQL,
+                       const double* gradQR, const double* cellSize,
+                       int direction) override;
 
   /* algebraicSource() function not included, as requested by the specification
    * file */
