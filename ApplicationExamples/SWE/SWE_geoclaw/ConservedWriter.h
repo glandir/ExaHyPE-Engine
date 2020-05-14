@@ -10,25 +10,24 @@
 #include "exahype/plotters/Plotter.h"
 
 namespace SWE {
-  class MySWESolver;
-  class ConservedWriter;
-}
+class MySWESolver;
+class ConservedWriter;
+}  // namespace SWE
 
-class SWE::ConservedWriter : public exahype::plotters::Plotter::UserOnTheFlyPostProcessing {
-public:
+class SWE::ConservedWriter
+    : public exahype::plotters::Plotter::UserOnTheFlyPostProcessing {
+ public:
   ConservedWriter(SWE::MySWESolver& solver);
   virtual ~ConservedWriter();
 
   void startPlotting(double time) override;
   void finishPlotting() override;
-  void mapQuantities(
-    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,
-    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,
-    const tarch::la::Vector<DIMENSIONS, double>& x,
-    const tarch::la::Vector<DIMENSIONS, int>&    pos,
-    double* const Q,
-    double* const outputQuantities,
-    double timeStamp) override;
+  void mapQuantities(const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,
+                     const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,
+                     const tarch::la::Vector<DIMENSIONS, double>& x,
+                     const tarch::la::Vector<DIMENSIONS, int>& pos,
+                     double* const Q, double* const outputQuantities,
+                     double timeStamp) override;
 };
 
 #endif /* POSTPROCESSING_ConservedWriter_CLASS_HEADER_ */

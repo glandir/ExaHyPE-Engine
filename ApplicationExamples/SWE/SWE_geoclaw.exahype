@@ -63,7 +63,7 @@ exahype-project  SWE
     patch-size const   = 3
     maximum-mesh-size = 0.05
     time-stepping     = global
-    type const      = godunov
+    type const      = musclhancock
     terms const = flux
     optimisation const = generic, usestack
     language const    = C
