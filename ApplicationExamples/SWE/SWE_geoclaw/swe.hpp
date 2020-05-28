@@ -22,8 +22,8 @@
 /// hv: The momentum in the y direction.
 ///
 /// b:  The Absolute height of the sea bed.
-///
-///
+
+#define SUPPRESS_SOLVER_DEBUG_OUTPUT
 #include "extern/AugRie.hpp"
 #include <cmath>
 #include <ostream>
@@ -164,6 +164,61 @@ inline auto originalRiemannSolver(double* fL, double* fR, const double* qL,
   }
 
   return smax;
+}
+
+/// \param[out] fL Fluxes from the left cell at the cell wall.
+/// \param[out] fR Fluxes from the right cell at the cell wall.
+/// \param qL Quantities in the left cell (`{h, hu, hv, b}`).
+/// \param qR Quantities in the right cell (`{h, hu, hv, b}`).
+/// \param direction Direction to consider: 0 => use u, 1 => use v.
+///
+/// \return The maximum speed (exact definition?); used to maintain CFL
+/// condition.
+inline auto riemannSolver(double* fL, double* fR, const double* qL,
+                          const double* qR, int direction, double grav,
+                          double epsilon) -> double {
+  const double& i_hLeft = qL[0];
+  const double& i_hRight = qR[0];
+  const double& i_huLeft = qL[direction + 1];
+  const double& i_huRight = qR[direction + 1];
+  const double& i_bLeft = qL[3];
+  const double& i_bRight = qR[3];
+
+  double& o_hUpdateLeft = fL[0];
+  double& o_hUpdateRight = fR[0];
+  double& o_huUpdateLeft = fL[direction + 1];
+  double& o_huUpdateRight = fR[direction + 1];
+  double o_maxWaveSpeed;
+
+  solver::AugRie<double> solver(0.000001, grav, 0.000001, 10, epsilon);
+  // clang-format off
+  solver.computeNetUpdates(
+            i_hLeft,
+            i_hRight,
+            i_huLeft,
+            i_huRight,
+            i_bLeft,
+            i_bRight,
+
+            o_hUpdateLeft,
+            o_hUpdateRight,
+            o_huUpdateLeft,
+            o_huUpdateRight,
+            o_maxWaveSpeed);
+  // clang-format on
+
+  // godunov.ccph expects fluxes directed towards the wall instead of in x
+  // direction, unfortunately.
+  fR[0] = -fR[0];
+  fR[1 + direction] = -fR[1 + direction];
+
+  // Fluxes for bathymetry and momentum in other direction are always zero.
+  fL[2 - direction] = 0;
+  fL[3] = 0;
+  fR[2 - direction] = 0;
+  fR[3] = 0;
+
+  return o_maxWaveSpeed;
 }
 
 }  // namespace swe
