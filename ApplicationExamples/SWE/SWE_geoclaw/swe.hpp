@@ -190,7 +190,15 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   double& o_huUpdateRight = fR[direction + 1];
   double o_maxWaveSpeed;
 
-  solver::AugRie<double> solver(0.000001, grav, 0.000001, 10, epsilon);
+  const auto dryTolerance = epsilon;
+  const auto newtonTolerance = 1e-6;
+  const auto newtonIterations = 10;
+  // Other suggestion was to set this really low, say
+  // `std::numeric_limits<double>::epsilon()`.
+  const auto zeroTolerance = 1e-6;
+
+  solver::AugRie<double> solver(dryTolerance, grav, newtonTolerance,
+                                newtonIterations, zeroTolerance);
   // clang-format off
   solver.computeNetUpdates(
             i_hLeft,
