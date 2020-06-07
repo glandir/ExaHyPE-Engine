@@ -193,9 +193,7 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   const auto dryTolerance = epsilon;
   const auto newtonTolerance = 1e-6;
   const auto newtonIterations = 10;
-  // Other suggestion was to set this really low, say
-  // `std::numeric_limits<double>::epsilon()`.
-  const auto zeroTolerance = 1e-6;
+  const auto zeroTolerance = std::numeric_limits<double>::epsilon();
 
   solver::AugRie<double> solver(dryTolerance, grav, newtonTolerance,
                                 newtonIterations, zeroTolerance);
