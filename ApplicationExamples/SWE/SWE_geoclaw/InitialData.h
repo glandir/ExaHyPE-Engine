@@ -5,6 +5,7 @@ namespace SWE {
 void ShockShockProblem(const double* const x, double* Q);
 void RareRareProblem(const double* const x, double* Q);
 void GaussFunctionProblem(const double* const x, double* Q);
+void GaussFunctionProblemY(const double* const x, double* Q);
 void ExpBreakProblem(const double* const x, double* Q);
 void DamBreakProblem(const double* const x, double* Q);
 void SeaAtRestProblem(const double* const x, double* Q);

@@ -62,6 +62,18 @@ void SWE::GaussFunctionProblem(const double* const x, double* Q) {
 }
 
 /*
+ * Gaussfunktion, but in y direction
+ */
+void SWE::GaussFunctionProblemY(const double* const x, double* Q) {
+  MySWESolver::Variables vars(Q);
+
+  vars.h() = exp(-pow(x[0] - 5, 2)) + 1;
+  vars.hu() = 0.0;
+  vars.hv() = 0.0;
+  vars.b() = 0.0;
+}
+
+/*
  * Constant water height with "exponential" hump in bathymetry.
  */
 void SWE::ExpBreakProblem(const double* const x, double* Q) {
@@ -340,6 +352,9 @@ void SWE::initialData(const double* const x, double* Q) {
       break;
     case 14:
       SolitaryWaveOnSimpleBeach(x, Q, 0.3, 0.15);
+      break;
+    case 15:
+      GaussFunctionProblemY(x, Q);
       break;
     default:
       GaussFunctionProblem(x, Q);
