@@ -259,7 +259,8 @@ double kernels::finitevolumes::musclhancock::c::solutionUpdate(
               0
           );
       assert(std::isfinite(s_max_x));
-      assert(s_max_x>tarch::la::NUMERICAL_ZERO_DIFFERENCE);
+      // assert(s_max_x>tarch::la::NUMERICAL_ZERO_DIFFERENCE);
+      assert(s_max_x >= 0.0);
       
       dt_max_allowed = std::min(
           dt_max_allowed, cflFactor / DIMENSIONS * cellSize[0] / s_max_x);
@@ -284,7 +285,8 @@ double kernels::finitevolumes::musclhancock::c::solutionUpdate(
           1
       );
       assert(std::isfinite(s_max_y));
-      assert(s_max_y>tarch::la::NUMERICAL_ZERO_DIFFERENCE);
+      // assert(s_max_y>tarch::la::NUMERICAL_ZERO_DIFFERENCE);
+      assert(s_max_y >= 0.0);
       
       dt_max_allowed = std::min(
           dt_max_allowed, cflFactor / DIMENSIONS * cellSize[1] / s_max_y);
