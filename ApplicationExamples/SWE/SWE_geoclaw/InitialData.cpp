@@ -169,6 +169,28 @@ void SWE::RunUpLinear(const double* const x, double* Q) {
 }
 
 /*
+ * Simulates a wave which approaches a linearly rising ramp at the left end of
+ * the channel. To be used with WALL boundaries.
+ */
+void SWE::RunUpLinearY(const double* const x, double* Q) {
+  MySWESolver::Variables vars(Q);
+
+  const double as = 0.3;
+  const double d = 1;
+  const double xr = 19.85;
+  const double alpha = atan(d / xr);
+  const double xs = d / tan(alpha) + sqrt(4.0 / (3.0 * as)) * acosh(sqrt(20.0));
+
+  vars.b() = (x[1] > xr) ? 0 : (-d / xr) * x[1] + d;
+  vars.h() = (x[1] > xr) ? d : (d / xr) * x[1];
+  vars.h() += as * (1.0 / pow(cosh(sqrt(3.0 * as / 4.0) * (x[1] - xs)), 2));
+  vars.hu() = 0.0;
+  vars.hv() = -vars.h() * as *
+              (1.0 / pow(cosh(sqrt(3 * as / 4) * (x[1] - xs)), 2)) *
+              sqrt(grav / d);
+}
+
+/*
  * Steady-state test case for artificial continental shelf.
  */
 void SWE::SteadyRunUpShelf(const double* const x, double* Q) {
@@ -355,6 +377,9 @@ void SWE::initialData(const double* const x, double* Q) {
       break;
     case 15:
       GaussFunctionProblemY(x, Q);
+      break;
+    case 16:
+      RunUpLinearY(x, Q);
       break;
     default:
       GaussFunctionProblem(x, Q);
