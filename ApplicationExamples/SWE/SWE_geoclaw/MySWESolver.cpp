@@ -122,5 +122,5 @@ double SWE::MySWESolver::riemannSolver(double* fL, double* fR, const double* qL,
                                        const double* qR, const double* gradQL,
                                        const double* gradQR,
                                        const double* cellSize, int direction) {
-  return swe::riemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  return swe::originalRiemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
 }
