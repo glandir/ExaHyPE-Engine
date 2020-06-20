@@ -10,6 +10,7 @@ using namespace kernels;
 double grav;
 double epsilon;
 int scenario;
+bool useOriginalSolver = false;
 
 tarch::logging::Log SWE::MySWESolver::_log("SWE::MySWESolver");
 
@@ -23,6 +24,9 @@ void SWE::MySWESolver::init(const std::vector<std::string>& cmdlineargs,
   }
   if (constants.isValueValidInt("scenario")) {
     scenario = constants.getValueAsInt("scenario");
+  }
+  if (constants.isValueValidBool("useOriginalSolver")) {
+    useOriginalSolver = constants.getValueAsBool("useOriginalSolver");
   }
 }
 
@@ -122,5 +126,9 @@ double SWE::MySWESolver::riemannSolver(double* fL, double* fR, const double* qL,
                                        const double* qR, const double* gradQL,
                                        const double* gradQR,
                                        const double* cellSize, int direction) {
-  return swe::originalRiemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  if (useOriginalSolver) {
+    return swe::originalRiemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  } else {
+    return swe::riemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  }
 }
