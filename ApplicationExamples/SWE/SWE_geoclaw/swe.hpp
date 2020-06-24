@@ -270,6 +270,16 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
                            qL_ + y_direction, qR_ + y_direction, qL_ + 3,
                            qR_ + 3, &dryTolerance, &grav, o_netUpdatesLeft,
                            o_netUpdatesRight, &o_maxWaveSpeed);
+  // godunov.ccph expects fluxes directed towards the wall instead of in x
+  // direction, unfortunately.
+  fR[0] = -fR[0];
+  fR[x_direction] = -fR[x_direction];
+
+  // Fluxes for bathymetry and momentum in other direction are always zero.
+  fL[y_direction] = 0;
+  fL[3] = 0;
+  fR[y_direction] = 0;
+  fR[3] = 0;
   // TODO
   return o_maxWaveSpeed;
 }
