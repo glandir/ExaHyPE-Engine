@@ -28,6 +28,25 @@
 #include <cmath>
 #include <ostream>
 
+extern "C" {
+
+enum SolverType {
+  GEOCLAW_FWAVE = 1,
+  GEOCLAW_SSQ_FWAVE,
+  GEOCLAW_AUG_RIEMANN,
+};
+
+void c_bind_geoclaw_solver_dp(int* i_solver, int* i_maxIter,
+                              int* i_numberOfFWaves, double* i_hL, double* i_hR,
+                              double* i_huL, double* i_huR, double* i_hvL,
+                              double* i_hvR, double* i_bL, double* i_bR,
+                              double* i_dryTol, double* i_g,
+                              double* o_netUpdatesLeft,
+                              double* o_netUpdatesRight,
+                              double* o_maxWaveSpeed);
+
+}  // extern "C"
+
 namespace swe {
 
 /// Helper to print a 4d vector behind a `double*`.
@@ -224,6 +243,34 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   fR[2 - direction] = 0;
   fR[3] = 0;
 
+  return o_maxWaveSpeed;
+}
+
+inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
+                               const double* qR, int direction, double grav,
+                               double epsilon) -> double {
+  int solverType = GEOCLAW_AUG_RIEMANN;
+  int maxIter = 10;
+  int numberOfFWaves = 3;
+  double dryTolerance = epsilon;
+  // double o_netUpdatesLeft[3];
+  // double o_netUpdatesRight[3];
+  double* o_netUpdatesLeft = fL;
+  double* o_netUpdatesRight = fR;
+  double o_maxWaveSpeed;
+
+  int x_direction = 1 + direction;
+  int y_direction = 2 - direction;
+
+  double qR_[4] = {qR[0], qR[1], qR[2], qR[4]};
+  double qL_[4] = {qL[0], qL[1], qL[2], qL[4]};
+
+  c_bind_geoclaw_solver_dp(&solverType, &maxIter, &numberOfFWaves, qL_ + 0,
+                           qR_ + 0, qL_ + x_direction, qR_ + x_direction,
+                           qL_ + y_direction, qR_ + y_direction, qL_ + 3,
+                           qR_ + 3, &dryTolerance, &grav, o_netUpdatesLeft,
+                           o_netUpdatesRight, &o_maxWaveSpeed);
+  // TODO
   return o_maxWaveSpeed;
 }
 

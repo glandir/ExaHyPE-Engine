@@ -10,7 +10,13 @@ using namespace kernels;
 double grav;
 double epsilon;
 int scenario;
-bool useOriginalSolver = false;
+
+enum SolverTypes {
+  SOLVERS_ORIGINAL,
+  SOLVERS_MINE,
+  SOLVERS_SAMOA,
+};
+int solverType;
 
 tarch::logging::Log SWE::MySWESolver::_log("SWE::MySWESolver");
 
@@ -25,8 +31,8 @@ void SWE::MySWESolver::init(const std::vector<std::string>& cmdlineargs,
   if (constants.isValueValidInt("scenario")) {
     scenario = constants.getValueAsInt("scenario");
   }
-  if (constants.isValueValidBool("useOriginalSolver")) {
-    useOriginalSolver = constants.getValueAsBool("useOriginalSolver");
+  if (constants.isValueValidInt("solverType")) {
+    solverType = constants.getValueAsInt("solverType");
   }
 }
 
@@ -126,9 +132,13 @@ double SWE::MySWESolver::riemannSolver(double* fL, double* fR, const double* qL,
                                        const double* qR, const double* gradQL,
                                        const double* gradQR,
                                        const double* cellSize, int direction) {
-  if (useOriginalSolver) {
+  if (solverType == SOLVERS_ORIGINAL) {
     return swe::originalRiemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
-  } else {
+  } else if (solverType == SOLVERS_MINE) {
     return swe::riemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  } else if (solverType == SOLVERS_SAMOA) {
+    return swe::samoaRiemannSolver(fL, fR, qL, qR, direction, grav, epsilon);
+  } else {
+    std::abort();
   }
 }

@@ -67,7 +67,7 @@ exahype-project  SWE
     terms const = flux
     optimisation const = generic, usestack
     language const    = C
-    constants = grav:9.81, epsilon:1e-3, scenario:11
+    constants = grav:9.81, epsilon:1e-3, scenario:11, solverType:2
     plot vtu::Cartesian::cells::ascii ConservedWriter
       variables const = 6
       time            = 0.0
