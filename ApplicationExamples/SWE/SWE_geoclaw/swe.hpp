@@ -258,10 +258,10 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   fR[1 + direction] = -fR[1 + direction];
 
   // Fluxes for bathymetry and momentum in other direction are always zero.
-  fL[2 - direction] = 0;
-  fL[3] = 0;
-  fR[2 - direction] = 0;
-  fR[3] = 0;
+  // fL[2 - direction] = 0;
+  // fL[3] = 0;
+  // fR[2 - direction] = 0;
+  // fR[3] = 0;
 
   return o_maxWaveSpeed;
 }
@@ -296,10 +296,10 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
   fR[x_direction] = -fR[x_direction];
 
   // Fluxes for bathymetry and momentum in other direction are always zero.
-  fL[y_direction] = 0;
-  fL[3] = 0;
-  fR[y_direction] = 0;
-  fR[3] = 0;
+  // fL[y_direction] = 0;
+  // fL[3] = 0;
+  // fR[y_direction] = 0;
+  // fR[3] = 0;
   // TODO
   return o_maxWaveSpeed;
 }
