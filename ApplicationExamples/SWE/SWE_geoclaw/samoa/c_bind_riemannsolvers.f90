@@ -137,7 +137,10 @@ module c_bind_riemannsolvers
   !BUGFIX:
   !Problem: loss of significance may occur in phiR-phiL, causing divergence of the steady state.
   !Action:  Compute delphi=phiR-phiL explicitly. delphi is arithmetically equivalent to phiR-phiL, but with far smaller numerical loss.
-  delphi = (i_huR - i_huL)*(uL + uR) - uL*uR*(i_hR - i_hL) + (0.5d0*i_g*(i_bR + i_hR - i_bL - i_hL)*(i_hR + i_hL)) - 0.5d0*i_g*(i_hR + i_hL)*(i_bR - i_bL)
+  delphi = (i_huR - i_huL)*(uL + uR) &
+      - uL*uR*(i_hR - i_hL) &
+      + (0.5d0*i_g*(i_bR + i_hR - i_bL - i_hL)*(i_hR + i_hL)) &
+      - 0.5d0*i_g*(i_hR + i_hL)*(i_bR - i_bL)
 
   !determine wave speeds
   sL=uL-sqrt(i_g*i_hL) ! 1 wave speed of left state
@@ -157,11 +160,17 @@ module c_bind_riemannsolvers
 
   select case (i_solver)
     case (GEOCLAW_FWAVE)
-        call riemann_fwave(3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_fwave(3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
     case (GEOCLAW_SSQ_FWAVE)
-        call riemann_ssqfwave(i_maxIter,3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_ssqfwave(i_maxIter,3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
     case (GEOCLAW_AUG_RIEMANN)
-        call riemann_aug_JCP(i_maxIter,3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_aug_JCP(i_maxIter,3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
   end select
 
   !eliminate ghost fluxes for wall
@@ -195,7 +204,9 @@ module c_bind_riemannsolvers
   o_maxWaveSpeed = maxVal(waveSpeeds)
   end subroutine c_bind_geoclaw_solver_dp
 
-  subroutine c_bind_geoclaw_solver_sp(i_solver, i_maxIter, i_numberOfFWaves, i_hL, i_hR, i_huL, i_huR, i_hvL, i_hvR, i_bL, i_bR, i_dryTol, i_g, o_netUpdatesLeft, o_netUpdatesRight, o_maxWaveSpeed )
+  subroutine c_bind_geoclaw_solver_sp(i_solver, i_maxIter, i_numberOfFWaves, &
+          i_hL, i_hR, i_huL, i_huR, i_hvL, i_hvR, i_bL, i_bR, i_dryTol, i_g, &
+          o_netUpdatesLeft, o_netUpdatesRight, o_maxWaveSpeed )
   !variable declaration
     !input
       integer, intent(in)                                 :: i_solver, i_maxIter, i_numberOfFWaves
@@ -304,7 +315,9 @@ module c_bind_riemannsolvers
   !BUGFIX:
   !Problem: loss of significance may occur in phiR-phiL, causing divergence of the steady state.
   !Action:  Compute delphi=phiR-phiL explicitly. delphi is arithmetically equivalent to phiR-phiL, but with far smaller numerical loss.
-  delphi = (i_huR - i_huL)*(uL + uR) - uL*uR*(i_hR - i_hL) + (0.5e0*i_g*(i_bR + i_hR - i_bL - i_hL)*(i_hR + i_hL)) - 0.5e0*i_g*(i_hR + i_hL)*(i_bR - i_bL)
+  delphi = (i_huR - i_huL)*(uL + uR) - uL*uR*(i_hR - i_hL) &
+      + (0.5e0*i_g*(i_bR + i_hR - i_bL - i_hL)*(i_hR + i_hL)) &
+      - 0.5e0*i_g*(i_hR + i_hL)*(i_bR - i_bL)
 
   !determine wave speeds
   sL=uL-sqrt(i_g*i_hL) ! 1 wave speed of left state
@@ -324,11 +337,17 @@ module c_bind_riemannsolvers
 
   select case (i_solver)
     case (GEOCLAW_FWAVE)
-        call riemann_fwave_sp(3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_fwave_sp(3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
     case (GEOCLAW_SSQ_FWAVE)
-        call riemann_ssqfwave_sp(i_maxIter,3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_ssqfwave_sp(i_maxIter,3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
     case (GEOCLAW_AUG_RIEMANN)
-        call riemann_aug_JCP_sp(i_maxIter,3,i_numberOfFWaves,i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
+        call riemann_aug_JCP_sp(i_maxIter,3,i_numberOfFWaves,&
+            i_hL,i_hR,i_huL,i_huR,i_hvL,i_hvR,i_bL,i_bR,&
+            uL,uR,vL,vR,delphi,sE1,sE2,i_dryTol,i_g,waveSpeeds,fWaves)
   end select
 
   !eliminate ghost fluxes for wall
