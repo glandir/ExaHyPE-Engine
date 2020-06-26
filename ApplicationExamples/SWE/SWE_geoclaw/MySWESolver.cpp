@@ -105,27 +105,18 @@ void SWE::MySWESolver::flux(const double* const Q, double** const F) {
   // Dimensions                        = 2
   // Number of variables + parameters  = 4 + 0
 
-  ReadOnlyVariables vars(Q);
+  swe::flux(Q, F, epsilon, grav);
+}
 
-  double* f = F[0];
-  double* g = F[1];
+void SWE::MySWESolver::nonConservativeProduct(const double* const Q,
+                                              const double* const gradQ,
+                                              double* const BgradQ) {
+  idx2 idx_gradQ(DIMENSIONS, NumberOfVariables);
 
-  double u_n = vars.hu() * vars.h() * std::sqrt(2) /
-               std::sqrt(std::pow(vars.h(), 4) +
-                         std::pow(std::max(vars.h(), epsilon), 4));
-  double v_n = vars.hv() * vars.h() * std::sqrt(2) /
-               std::sqrt(std::pow(vars.h(), 4) +
-                         std::pow(std::max(vars.h(), epsilon), 4));
-
-  f[0] = vars.h() * u_n;
-  f[1] = vars.h() * u_n * u_n;  // 0.5 * grav * vars.h() * vars.h();
-  f[2] = vars.h() * u_n * v_n;
-  f[3] = 0.0;
-
-  g[0] = vars.h() * v_n;
-  g[1] = vars.h() * u_n * v_n;
-  g[2] = vars.h() * v_n * v_n;  // 0.5 * grav * vars.h() * vars.h();
-  g[3] = 0.0;
+  BgradQ[0] = 0.0;
+  BgradQ[1] = grav * Q[0] * gradQ[idx_gradQ(0, 3)];
+  BgradQ[2] = grav * Q[0] * gradQ[idx_gradQ(1, 3)];
+  BgradQ[3] = 0.0;
 }
 
 double SWE::MySWESolver::riemannSolver(double* fL, double* fR, const double* qL,

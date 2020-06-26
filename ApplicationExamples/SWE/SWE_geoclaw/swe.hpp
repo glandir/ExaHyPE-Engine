@@ -24,6 +24,7 @@
 /// b:  The Absolute height of the sea bed.
 
 #define SUPPRESS_SOLVER_DEBUG_OUTPUT
+#include "MySWESolver_Variables.h"
 #include "extern/AugRie.hpp"
 #include <cmath>
 #include <ostream>
@@ -83,29 +84,36 @@ inline auto eigenvalues(const double* const Q, const int dIndex,
 /// \param[in] Q The values of Q in a given cell.
 /// \param[out] F The resulting fluxes in that cell for both directions
 /// (`{.flux_x = {dh, dhu, dhv, db}, .flux_y = {dh, dhu, dhv, db}}`).
-inline auto flux(const double* Q, double** F, double epsilon) -> void {
-  // Dimensions                        = 2
-  // Number of variables + parameters  = 4 + 0
+inline auto flux(const double* Q, double** F, double epsilon, double grav)
+    -> void {
+  SWE::AbstractMySWESolver::ReadOnlyVariables vars(Q);
 
-  double* const f = F[0];
-  double* const g = F[1];
+  const double ih = 1. / vars.h();
 
-  double u_n =
-      Q[1] * Q[0] * std::sqrt(2) /
-      std::sqrt(std::pow(Q[0], 4) + std::pow(std::max(Q[0], epsilon), 4));
-  double v_n =
-      Q[2] * Q[0] * std::sqrt(2) /
-      std::sqrt(std::pow(Q[0], 4) + std::pow(std::max(Q[0], epsilon), 4));
+  double* f = F[0];
+  double* g = F[1];
 
-  f[0] = Q[0] * u_n;
-  f[1] = Q[0] * u_n * u_n;  // 0.5 * grav * Q[0] * Q[0];
-  f[2] = Q[0] * u_n * v_n;
-  f[3] = 0.0;
+  if (Q[0] < epsilon) {
+    f[0] = 0.0;
+    f[1] = 0.0;
+    f[2] = 0.0;
+    f[3] = 0.0;
 
-  g[0] = Q[0] * v_n;
-  g[1] = Q[0] * u_n * v_n;
-  g[2] = Q[0] * v_n * v_n;  // 0.5 * grav * Q[0] * Q[0];
-  g[3] = 0.0;
+    g[0] = 0.0;
+    g[1] = 0.0;
+    g[2] = 0.0;
+    g[3] = 0.0;
+  } else {
+    f[0] = vars.hu();
+    f[1] = vars.hu() * vars.hu() * ih + 0.5 * grav * vars.h() * vars.h();
+    f[2] = vars.hu() * vars.hv() * ih;
+    f[3] = 0.0;
+
+    g[0] = vars.hv();
+    g[1] = vars.hu() * vars.hv() * ih;
+    g[2] = vars.hv() * vars.hv() * ih + 0.5 * grav * vars.h() * vars.h();
+    g[3] = 0.0;
+  }
 }
 
 /// \param[out] fL Fluxes from the left cell at the cell wall.
@@ -147,8 +155,8 @@ inline auto originalRiemannSolver(double* fL, double* fR, const double* qL,
   double* FL[Dimensions] = {FL2[0], FL2[1]};
   /// "Internal" fluxes in right cell (`double[2][4]`).
   double* FR[Dimensions] = {FR2[0], FR2[1]};
-  flux(qL, FL, epsilon);
-  flux(qR, FR, epsilon);
+  flux(qL, FL, epsilon, grav);
+  flux(qR, FR, epsilon, grav);
 
   /// Flux across cell wall (`double[4]`).
   double flux[NumberOfVariables] = {

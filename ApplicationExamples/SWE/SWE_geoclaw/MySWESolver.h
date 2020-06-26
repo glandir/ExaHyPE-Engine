@@ -94,6 +94,9 @@ class SWE::MySWESolver : public SWE::AbstractMySWESolver {
    */
   void flux(const double* const Q, double** const F) override;
 
+  void nonConservativeProduct(const double* const Q, const double* const gradQ,
+                              double* const BgradQ) override;
+
   double riemannSolver(double* fL, double* fR, const double* qL,
                        const double* qR, const double* gradQL,
                        const double* gradQR, const double* cellSize,
