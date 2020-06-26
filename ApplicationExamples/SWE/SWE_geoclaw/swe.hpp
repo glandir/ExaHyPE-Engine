@@ -24,7 +24,6 @@
 /// b:  The Absolute height of the sea bed.
 
 #define SUPPRESS_SOLVER_DEBUG_OUTPUT
-#include "MySWESolver_Variables.h"
 #include "extern/AugRie.hpp"
 #include <cmath>
 #include <ostream>
@@ -71,24 +70,22 @@ inline auto eigenvalues(const double* const Q, const int dIndex,
   // Number of variables    = 4 + #parameters
   /// Dimensions                        = 2
   // Number of variables + parameters  = 4 + 0
-  SWE::AbstractMySWESolver::ReadOnlyVariables vars(Q);
-  SWE::AbstractMySWESolver::Variables eigs(lambda);
 
-  const double c = std::sqrt(grav * vars.h());
-  const double ih = 1. / vars.h();
+  const double c = std::sqrt(grav * Q[0]);
+  const double ih = 1. / Q[0];
   double u_n = Q[dIndex + 1] * ih;
 
-  if (vars.h() < epsilon) {
-    eigs.h() = 0.0;
-    eigs.hu() = 0.0;
-    eigs.hv() = 0.0;
-    eigs.b() = 0.0;
+  if (Q[0] < epsilon) {
+    lambda[0] = 0.0;
+    lambda[1] = 0.0;
+    lambda[2] = 0.0;
+    lambda[3] = 0.0;
     //    std::cout << 0.0 << std::endl;
   } else {
-    eigs.h() = u_n + c;
-    eigs.hu() = u_n - c;
-    eigs.hv() = u_n;
-    eigs.b() = 0.0;
+    lambda[0] = u_n + c;
+    lambda[1] = u_n - c;
+    lambda[2] = u_n;
+    lambda[3] = 0.0;
     //    std::cout << eigs.h() + std::abs(c) << std::endl;
   }
 }
@@ -98,9 +95,7 @@ inline auto eigenvalues(const double* const Q, const int dIndex,
 /// (`{.flux_x = {dh, dhu, dhv, db}, .flux_y = {dh, dhu, dhv, db}}`).
 inline auto flux(const double* Q, double** F, double epsilon, double grav)
     -> void {
-  SWE::AbstractMySWESolver::ReadOnlyVariables vars(Q);
-
-  const double ih = 1. / vars.h();
+  const double ih = 1. / Q[0];
 
   double* f = F[0];
   double* g = F[1];
@@ -116,14 +111,14 @@ inline auto flux(const double* Q, double** F, double epsilon, double grav)
     g[2] = 0.0;
     g[3] = 0.0;
   } else {
-    f[0] = vars.hu();
-    f[1] = vars.hu() * vars.hu() * ih + 0.5 * grav * vars.h() * vars.h();
-    f[2] = vars.hu() * vars.hv() * ih;
+    f[0] = Q[1];
+    f[1] = Q[1] * Q[1] * ih + 0.5 * grav * Q[0] * Q[0];
+    f[2] = Q[1] * Q[2] * ih;
     f[3] = 0.0;
 
-    g[0] = vars.hv();
-    g[1] = vars.hu() * vars.hv() * ih;
-    g[2] = vars.hv() * vars.hv() * ih + 0.5 * grav * vars.h() * vars.h();
+    g[0] = Q[2];
+    g[1] = Q[1] * Q[2] * ih;
+    g[2] = Q[2] * Q[2] * ih + 0.5 * grav * Q[0] * Q[0];
     g[3] = 0.0;
   }
 }
