@@ -69,16 +69,28 @@ inline auto eigenvalues(const double* const Q, const int dIndex,
     -> void {
   // Dimensions             = 2
   // Number of variables    = 4 + #parameters
+  /// Dimensions                        = 2
+  // Number of variables + parameters  = 4 + 0
+  SWE::AbstractMySWESolver::ReadOnlyVariables vars(Q);
+  SWE::AbstractMySWESolver::Variables eigs(lambda);
 
-  const double c = std::sqrt(grav * Q[0]);
-  double u_n =
-      Q[dIndex + 1] * Q[0] * std::sqrt(2) /
-      std::sqrt(std::pow(Q[0], 4) + std::pow(std::max(Q[0], epsilon), 4));
+  const double c = std::sqrt(grav * vars.h());
+  const double ih = 1. / vars.h();
+  double u_n = Q[dIndex + 1] * ih;
 
-  lambda[0] = u_n + c;
-  lambda[1] = u_n - c;
-  lambda[2] = u_n;
-  lambda[3] = 0.0;
+  if (vars.h() < epsilon) {
+    eigs.h() = 0.0;
+    eigs.hu() = 0.0;
+    eigs.hv() = 0.0;
+    eigs.b() = 0.0;
+    //    std::cout << 0.0 << std::endl;
+  } else {
+    eigs.h() = u_n + c;
+    eigs.hu() = u_n - c;
+    eigs.hv() = u_n;
+    eigs.b() = 0.0;
+    //    std::cout << eigs.h() + std::abs(c) << std::endl;
+  }
 }
 
 /// \param[in] Q The values of Q in a given cell.

@@ -56,18 +56,7 @@ void SWE::MySWESolver::eigenvalues(const double* const Q, const int dIndex,
   // Dimensions             = 2
   // Number of variables    = 4 + #parameters
 
-  ReadOnlyVariables vars(Q);
-  Variables eigs(lambda);
-
-  const double c = std::sqrt(grav * vars.h());
-  double u_n = Q[dIndex + 1] * vars.h() * std::sqrt(2) /
-               std::sqrt(std::pow(vars.h(), 4) +
-                         std::pow(std::max(vars.h(), epsilon), 4));
-
-  eigs.h() = u_n + c;
-  eigs.hu() = u_n - c;
-  eigs.hv() = u_n;
-  eigs.b() = 0.0;
+  return swe::eigenvalues(Q, dIndex, lambda, grav, epsilon);
 }
 
 void SWE::MySWESolver::boundaryValues(const double* const x, const double t,
