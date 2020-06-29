@@ -327,12 +327,12 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
   flux(qR, FR, epsilon, grav);
 
   for (int i = 0; i < 4; i++) {
-    std::cout << "i: " << i << '\n';
-    std::cout << "fL: " << fL[i] << '\n';
-    std::cout << "fR: " << fR[i] << '\n';
+    // std::cout << "i: " << i << '\n';
+    // std::cout << "fL: " << fL[i] << '\n';
+    // std::cout << "fR: " << fR[i] << '\n';
     fL[i] += FR[direction][i];
-    std::cout << "FL: " << FL[direction][i] << '\n';
-    std::cout << "FR: " << FR[direction][i] << '\n';
+    // std::cout << "FL: " << FL[direction][i] << '\n';
+    // std::cout << "FR: " << FR[direction][i] << '\n';
     fR[i] += FL[direction][i];
   }
 
