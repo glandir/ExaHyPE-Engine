@@ -330,10 +330,10 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
     std::cout << "i: " << i << '\n';
     std::cout << "fL: " << fL[i] << '\n';
     std::cout << "fR: " << fR[i] << '\n';
-    fL[i] += FL[direction][i];
+    fL[i] += FR[direction][i];
     std::cout << "FL: " << FL[direction][i] << '\n';
     std::cout << "FR: " << FR[direction][i] << '\n';
-    fR[i] += FR[direction][i];
+    fR[i] += FL[direction][i];
   }
 
   return o_maxWaveSpeed;
