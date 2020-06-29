@@ -249,8 +249,8 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
 
   // godunov.ccph expects fluxes directed towards the wall instead of in x
   // direction, unfortunately.
-  fR[0] = -fR[0];
-  fR[1 + direction] = -fR[1 + direction];
+  // fR[0] = -fR[0];
+  // fR[1 + direction] = -fR[1 + direction];
 
   // Fluxes for bathymetry and momentum in other direction are always zero.
   // fL[2 - direction] = 0;
@@ -277,8 +277,8 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
   int x_direction = 1 + direction;
   int y_direction = 2 - direction;
 
-  double qR_[4] = {qR[0], qR[1], qR[2], qR[4]};
-  double qL_[4] = {qL[0], qL[1], qL[2], qL[4]};
+  double qR_[4] = {qR[0], qR[1], qR[2], qR[3]};
+  double qL_[4] = {qL[0], qL[1], qL[2], qL[3]};
 
   c_bind_geoclaw_solver_dp(&solverType, &maxIter, &numberOfFWaves, qL_ + 0,
                            qR_ + 0, qL_ + x_direction, qR_ + x_direction,
@@ -287,8 +287,8 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
                            o_netUpdatesRight, &o_maxWaveSpeed);
   // godunov.ccph expects fluxes directed towards the wall instead of in x
   // direction, unfortunately.
-  fR[0] = -fR[0];
-  fR[x_direction] = -fR[x_direction];
+  // fR[0] = -fR[0];
+  // fR[x_direction] = -fR[x_direction];
 
   // Fluxes for bathymetry and momentum in other direction are always zero.
   // fL[y_direction] = 0;

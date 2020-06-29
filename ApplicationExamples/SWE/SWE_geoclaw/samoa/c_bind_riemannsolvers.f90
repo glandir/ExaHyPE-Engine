@@ -40,6 +40,21 @@ module c_bind_riemannsolvers
   !* necessary (changed) part of the GeoClaw subroutine rpn - start *
   !******************************************************************
 
+  ! TODO: remove. check inputs
+  ! print *, "i_solver:", i_solver
+  ! print *, "i_maxIter:", i_maxIter
+  ! print *, "i_numberOfFWaves:", i_numberOfFWaves
+  ! print *, "i_hL:", i_hL
+  ! print *, "i_hR:", i_hR
+  ! print *, "i_huL:", i_huL
+  ! print *, "i_huR:", i_huR
+  ! print *, "i_hvL:", i_hvL
+  ! print *, "i_hvR:", i_hvR
+  ! print *, "i_bL:", i_bL
+  ! print *, "i_bR:", i_bR
+  ! print *, "i_dryTol:", i_dryTol
+  ! print *, "i_g:", i_g
+
   !reset max wave speed
   o_maxWaveSpeed = 0.d0
 
