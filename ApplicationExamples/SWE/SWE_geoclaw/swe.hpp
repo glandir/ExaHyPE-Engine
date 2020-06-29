@@ -268,7 +268,12 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   flux(qR, FR, epsilon, grav);
 
   for (int i = 0; i < 4; i++) {
+    std::cout << "i: " << i << '\n';
+    std::cout << "fL: " << fL[i] << '\n';
+    std::cout << "fR: " << fR[i] << '\n';
     fL[i] += FL[direction][i];
+    std::cout << "FL: " << FL[direction][i] << '\n';
+    std::cout << "FR: " << FR[direction][i] << '\n';
     fR[i] += FR[direction][i];
   }
 
@@ -310,6 +315,27 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
   // fR[y_direction] = 0;
   // fR[3] = 0;
   // TODO
+  //
+
+  double FL2[2][4] = {{0.0}};
+  double FR2[2][4] = {{0.0}};
+  /// "Internal" fluxes in left cell (`double[2][4]`).
+  double* FL[2] = {FL2[0], FL2[1]};
+  /// "Internal" fluxes in right cell (`double[2][4]`).
+  double* FR[2] = {FR2[0], FR2[1]};
+  flux(qL, FL, epsilon, grav);
+  flux(qR, FR, epsilon, grav);
+
+  for (int i = 0; i < 4; i++) {
+    std::cout << "i: " << i << '\n';
+    std::cout << "fL: " << fL[i] << '\n';
+    std::cout << "fR: " << fR[i] << '\n';
+    fL[i] += FL[direction][i];
+    std::cout << "FL: " << FL[direction][i] << '\n';
+    std::cout << "FR: " << FR[direction][i] << '\n';
+    fR[i] += FR[direction][i];
+  }
+
   return o_maxWaveSpeed;
 }
 
