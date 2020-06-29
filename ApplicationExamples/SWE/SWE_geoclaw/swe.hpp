@@ -258,6 +258,20 @@ inline auto riemannSolver(double* fL, double* fR, const double* qL,
   // fR[2 - direction] = 0;
   // fR[3] = 0;
 
+  double FL2[2][4] = {{0.0}};
+  double FR2[2][4] = {{0.0}};
+  /// "Internal" fluxes in left cell (`double[2][4]`).
+  double* FL[2] = {FL2[0], FL2[1]};
+  /// "Internal" fluxes in right cell (`double[2][4]`).
+  double* FR[2] = {FR2[0], FR2[1]};
+  flux(qL, FL, epsilon, grav);
+  flux(qR, FR, epsilon, grav);
+
+  for (int i = 0; i < 4; i++) {
+    fL[i] += FL[direction][i];
+    fR[i] += FR[direction][i];
+  }
+
   return o_maxWaveSpeed;
 }
 

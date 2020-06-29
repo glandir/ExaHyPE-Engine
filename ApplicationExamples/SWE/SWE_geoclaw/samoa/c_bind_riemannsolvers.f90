@@ -219,5 +219,9 @@ module c_bind_riemannsolvers
   !compute maximum wave speed
   waveSpeeds = abs(waveSpeeds)
   o_maxWaveSpeed = maxVal(waveSpeeds)
+
+  ! print *, "o_netUpdatesLeft:", o_netUpdatesLeft
+  ! print *, "o_netUpdatesRight:", o_netUpdatesRight
+  ! print *, "o_maxWaveSpeed:", o_maxWaveSpeed
   end subroutine c_bind_geoclaw_solver_dp
 end module
