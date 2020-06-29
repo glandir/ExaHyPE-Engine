@@ -12,36 +12,37 @@
       ! instabilities that arise (with any solver) as flow becomes transcritical over variable topo
       ! due to loss of hyperbolicity.
 
+      use, intrinsic :: iso_c_binding
+
       implicit none
 
-
       !input
-      integer meqn,mwaves,maxiter
-      double precision fw(meqn,mwaves)
-      double precision sw(mwaves)
-      double precision hL,hR,huL,huR,bL,bR,uL,uR,delphi,sE1,sE2
-      double precision hvL,hvR,vL,vR
-      double precision drytol,g
+      integer (kind=c_int) meqn,mwaves,maxiter
+      real (kind=c_double) fw(meqn,mwaves)
+      real (kind=c_double) sw(mwaves)
+      real (kind=c_double) hL,hR,huL,huR,bL,bR,uL,uR,delphi,sE1,sE2
+      real (kind=c_double) hvL,hvR,vL,vR
+      real (kind=c_double) drytol,g
 
 
       !local
-      integer m,mw,k,iter
-      double precision A(3,3)
-      double precision r(3,3)
-      double precision lambda(3)
-      double precision del(3)
-      double precision beta(3)
+      integer (kind=c_int) m,mw,k,iter
+      real (kind=c_double) A(3,3)
+      real (kind=c_double) r(3,3)
+      real (kind=c_double) lambda(3)
+      real (kind=c_double) del(3)
+      real (kind=c_double) beta(3)
 
-      double precision delh,delhu,delb,delnorm
-      double precision rare1st,rare2st,sdelta,raremin,raremax
-      double precision criticaltol,convergencetol,raretol
-      double precision s1s2bar,s1s2tilde,hbar,hLstar,hRstar,hustar
-      double precision huRstar,huLstar,uRstar,uLstar,hstarHLL
-      double precision deldelh,deldelphi
-      double precision s1m,s2m,hm
-      double precision det1,det2,det3,determinant
+      real (kind=c_double) delh,delhu,delb,delnorm
+      real (kind=c_double) rare1st,rare2st,sdelta,raremin,raremax
+      real (kind=c_double) criticaltol,convergencetol,raretol
+      real (kind=c_double) s1s2bar,s1s2tilde,hbar,hLstar,hRstar,hustar
+      real (kind=c_double) huRstar,huLstar,uRstar,uLstar,hstarHLL
+      real (kind=c_double) deldelh,deldelphi
+      real (kind=c_double) s1m,s2m,hm
+      real (kind=c_double) det1,det2,det3,determinant
 
-      logical rare1,rare2,rarecorrector,rarecorrectortest,sonic
+      logical (kind=c_bool) rare1,rare2,rarecorrector,rarecorrectortest,sonic
 
 
       !determine del vectors
@@ -264,32 +265,33 @@
       ! solve shallow water equations given single left and right states
       ! steady state wave is subtracted from delta [q,f]^T before decomposition
 
-     
-      implicit none
-      
-      !input
-      integer meqn,mwaves,maxiter
+      use, intrinsic :: iso_c_binding
 
-      double precision hL,hR,huL,huR,bL,bR,uL,uR,delphi,sE1,sE2
-      double precision vL,vR,hvL,hvR
-      double precision drytol,g
+      implicit none
+
+      !input
+      integer (kind=c_int) meqn,mwaves,maxiter
+
+      real (kind=c_double) hL,hR,huL,huR,bL,bR,uL,uR,delphi,sE1,sE2
+      real (kind=c_double) vL,vR,hvL,hvR
+      real (kind=c_double) drytol,g
 
       !local
-      integer iter
+      integer (kind=c_int) iter
 
-      logical sonic
+      logical (kind=c_bool) sonic
 
-      double precision delh,delhu,delb,delhdecomp,delphidecomp
-      double precision s1s2bar,s1s2tilde,hbar,hLstar,hRstar,hustar
-      double precision uRstar,uLstar,hstarHLL
-      double precision deldelh,deldelphi
-      double precision alpha1,alpha2,beta1,beta2,delalpha1,delalpha2
-      double precision criticaltol,convergencetol
-      double precision sL,sR
-      double precision uhat,chat,sRoe1,sRoe2
+      real (kind=c_double) delh,delhu,delb,delhdecomp,delphidecomp
+      real (kind=c_double) s1s2bar,s1s2tilde,hbar,hLstar,hRstar,hustar
+      real (kind=c_double) uRstar,uLstar,hstarHLL
+      real (kind=c_double) deldelh,deldelphi
+      real (kind=c_double) alpha1,alpha2,beta1,beta2,delalpha1,delalpha2
+      real (kind=c_double) criticaltol,convergencetol
+      real (kind=c_double) sL,sR
+      real (kind=c_double) uhat,chat,sRoe1,sRoe2
 
-      double precision sw(mwaves)
-      double precision fw(meqn,mwaves)
+      real (kind=c_double) sw(mwaves)
+      real (kind=c_double) fw(meqn,mwaves)
 
       !determine del vectors
       delh = hR-hL
@@ -449,22 +451,24 @@
       ! solution has two waves.
       ! flux - source is decomposed.
 
+      use, intrinsic :: iso_c_binding
+
       implicit none
 
       !input
-      integer meqn,mwaves
+      integer (kind=c_int) meqn,mwaves
 
-      double precision hL,hR,huL,huR,bL,bR,uL,uR,delphi,s1,s2
-      double precision hvL,hvR,vL,vR
-      double precision drytol,g
+      real (kind=c_double) hL,hR,huL,huR,bL,bR,uL,uR,delphi,s1,s2
+      real (kind=c_double) hvL,hvR,vL,vR
+      real (kind=c_double) drytol,g
 
-      double precision sw(mwaves)
-      double precision fw(meqn,mwaves)
+      real (kind=c_double) sw(mwaves)
+      real (kind=c_double) fw(meqn,mwaves)
 
       !local
-      double precision delh,delhu,delb,delhdecomp,delphidecomp
-      double precision deldelh,deldelphi
-      double precision beta1,beta2
+      real (kind=c_double) delh,delhu,delb,delhdecomp,delphidecomp
+      real (kind=c_double) deldelh,deldelphi
+      real (kind=c_double) beta1,beta2
 
 
       !determine del vectors
@@ -508,21 +512,22 @@
 
       !determine the Riemann structure (wave-type in each family)
 
+      use, intrinsic :: iso_c_binding
 
       implicit none
 
       !input
-      double precision hL,hR,uL,uR,drytol,g
-      integer maxiter
+      real (kind=c_double) hL,hR,uL,uR,drytol,g
+      integer (kind=c_int) maxiter
 
       !output
-      double precision s1m,s2m
-      logical rare1,rare2
+      real (kind=c_double) s1m,s2m
+      logical (kind=c_bool) rare1,rare2
 
       !local
-      double precision hm,u1m,u2m,um,delu
-      double precision h_max,h_min,h0,F_max,F_min,dfdh,F0,slope,gL,gR
-      integer iter
+      real (kind=c_double) hm,u1m,u2m,um,delu
+      real (kind=c_double) h_max,h_min,h0,F_max,F_min,dfdh,F0,slope,gL,gR
+      integer (kind=c_int) iter
 
 
 
