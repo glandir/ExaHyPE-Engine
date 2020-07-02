@@ -289,53 +289,54 @@ inline auto samoaRiemannSolver(double* fL, double* fR, const double* qL,
   double dryTolerance = epsilon;
   // double o_netUpdatesLeft[3];
   // double o_netUpdatesRight[3];
-  double* o_netUpdatesLeft = fL;
-  double* o_netUpdatesRight = fR;
+  double _fL[4];
+  double _fR[4];
+  double* o_netUpdatesLeft  = _fL;
+  double* o_netUpdatesRight = _fR;
   double o_maxWaveSpeed;
-
-  int x_direction = 1 + direction;
-  int y_direction = 2 - direction;
 
   double qR_[4] = {qR[0], qR[1], qR[2], qR[3]};
   double qL_[4] = {qL[0], qL[1], qL[2], qL[3]};
 
-  c_bind_geoclaw_solver_dp(&solverType, &maxIter, &numberOfFWaves, qL_ + 0,
-                           qR_ + 0, qL_ + x_direction, qR_ + x_direction,
-                           qL_ + y_direction, qR_ + y_direction, qL_ + 3,
-                           qR_ + 3, &dryTolerance, &grav, o_netUpdatesLeft,
+  double t1[2] = {0.0 ,0.0}; t1[direction] = 1.0;
+  double t2[2] = {-t1[1] , t1[0] };
+  
+  //transform
+  qR_[1] = t1[0] * qR[1] + t1[1] * qR[2];
+  qR_[2] = t2[0] * qR[1] + t2[1] * qR[2];
+  
+  qL_[1] = t1[0] * qL[1] + t1[1] * qL[2];
+  qL_[2] = t2[0] * qL[1] + t2[1] * qL[2];
+
+  c_bind_geoclaw_solver_dp(&solverType, &maxIter, &numberOfFWaves,
+                           qL_ + 0, qR_ + 0,
+                           qL_ + 1, qR_ + 1,
+                           qL_ + 2, qR_ + 2,
+                           qL_ + 3, qR_ + 3,
+                           &dryTolerance, &grav, o_netUpdatesLeft,
                            o_netUpdatesRight, &o_maxWaveSpeed);
-  // godunov.ccph expects fluxes directed towards the wall instead of in x
-  // direction, unfortunately.
-  // fR[0] = -fR[0];
-  // fR[x_direction] = -fR[x_direction];
 
-  // Fluxes for bathymetry and momentum in other direction are always zero.
-  // fL[y_direction] = 0;
-  // fL[3] = 0;
-  // fR[y_direction] = 0;
-  // fR[3] = 0;
-  // TODO
-  //
+  fL[0] = _fL[0];
+  fR[0] = _fR[0];
 
-  double FL2[2][4] = {{0.0}};
-  double FR2[2][4] = {{0.0}};
-  /// "Internal" fluxes in left cell (`double[2][4]`).
-  double* FL[2] = {FL2[0], FL2[1]};
-  /// "Internal" fluxes in right cell (`double[2][4]`).
-  double* FR[2] = {FR2[0], FR2[1]};
-  flux(qL, FL, epsilon, grav);
-  flux(qR, FR, epsilon, grav);
+  fL[1] = _fL[1] * t1[0] + _fL[2] * t2[0];
+  fL[2] = _fL[1] * t1[1] + _fL[2] * t2[1];
 
-  for (int i = 0; i < 4; i++) {
-    // std::cout << "i: " << i << '\n';
-    // std::cout << "fL: " << fL[i] << '\n';
-    // std::cout << "fR: " << fR[i] << '\n';
-    fL[i] += FR[direction][i];
-    // std::cout << "FL: " << FL[direction][i] << '\n';
-    // std::cout << "FR: " << FR[direction][i] << '\n';
-    fR[i] += FL[direction][i];
-  }
+  fR[1] = _fR[1] * t1[0] + _fR[2] * t2[0];
+  fR[2] = _fR[1] * t1[1] + _fR[2] * t2[1];
 
+  // double* FL[2] = {FL2[0], FL2[1]};
+  // double* FR[2] = {FR2[0], FR2[1]};
+  // flux(qL, FL, epsilon, grav);
+  // flux(qR, FR, epsilon, grav);
+
+  fR[0] = -fR[0];
+  fR[1] = -fR[1];
+  fR[2] = -fR[2];
+
+  fR[3] = 0.0;
+  fL[3] = 0.0;
+  
   return o_maxWaveSpeed;
 }
 
